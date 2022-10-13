@@ -14,15 +14,39 @@ const camera = new THREE.PerspectiveCamera(
   2000
 );
 
+let loaded = false;
+
 const renderer = new THREE.WebGL1Renderer({
   canvas: document.querySelector("#bg"),
 });
 
+const loadingManager = new THREE.LoadingManager();
+
+const progressBar = document.getElementById("progress-bar");
+
 const onProgress = function (xhr) {
   if (xhr.lengthComputable) {
     const percentComplete = (xhr.loaded / xhr.total) * 100;
-    console.log(Math.round(percentComplete, 2) + "% downloaded");
+    console.log(Math.round(percentComplete, 2));
   }
+};
+
+// loadingManager.onStart = function (url, item, total) {
+//   progressBar.value = (loaded / total) * 100;
+// };
+
+loadingManager.onProgress = function (url, loaded, total) {
+  progressBar.value = (loaded / total) * 100;
+};
+
+const progressBarContainer = document.querySelector(".progress-bar-container");
+
+loadingManager.onLoad = function () {
+  progressBarContainer.style.display = "none";
+};
+
+loadingManager.onError = function (url) {
+  console.error(`Error Loading: ${url}`);
 };
 
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -39,30 +63,34 @@ camera.position.setX(15);
 
 // scene.add(torus);
 
-new MTLLoader().load("/assets/tree/p_p.mtl", function (materials) {
-  materials.preload();
-  new OBJLoader().setMaterials(materials).load(
-    "/assets/tree/prunus_persica.obj",
-    function (object) {
-      scene.add(object);
-    },
-    onProgress
-  );
-});
-
-new MTLLoader().load(
-  "/assets/grass/grass.mtl",
+new MTLLoader(loadingManager).load(
+  "/assets/tree/p_p.mtl",
   function (materials) {
     materials.preload();
-    new OBJLoader()
-      .setMaterials(materials)
-      .load("/assets/grass/grass.obj", function (object) {
-        object.scale.set(0.9, 0.1, 0.1)
-        object.position.set(2, 0, 0);
+    new OBJLoader().setMaterials(materials).load(
+      "/assets/tree/prunus_persica.obj",
+      function (object) {
         scene.add(object);
-      });
+        loaded = true;
+      },
+      onProgress
+    );
   }
 );
+
+// new MTLLoader(loadingManager).load(
+//   "/assets/grass/grass.mtl",
+//   function (materials) {
+//     materials.preload();
+//     new OBJLoader()
+//       .setMaterials(materials)
+//       .load("/assets/grass/grass.obj", function (object) {
+//         object.scale.set(0.9, 0.1, 0.1);
+//         object.position.set(2, 0, 0);
+//         scene.add(object);
+//       });
+//   }
+// );
 
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(20, 20, 20);
@@ -71,10 +99,6 @@ const ambientLight = new THREE.AmbientLight(0xffffff);
 ambientLight.position.set(20, 20, 20);
 
 scene.add(pointLight, ambientLight);
-
-const lightHelper = new THREE.PointLightHelper(pointLight);
-const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(lightHelper, gridHelper);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 const starSphere = new THREE.SphereGeometry(0.25, 24, 24);
@@ -93,7 +117,7 @@ function addStar() {
 
 Array(200).fill().forEach(addStar);
 
-const spaceTexture = new THREE.TextureLoader().load("/assets/space.jpg");
+const spaceTexture = new THREE.TextureLoader().load("/assets/sky.jpg");
 scene.background = spaceTexture;
 
 const brandonTexture = new THREE.TextureLoader().load("/assets/brandon.jpg");
@@ -117,6 +141,30 @@ const moon = new THREE.Mesh(
 );
 
 scene.add(moon);
+
+const grassTexture = new THREE.TextureLoader().load("/assets/grass/grass.jpg");
+grassTexture.wrapS = THREE.RepeatWrapping;
+grassTexture.wrapT = THREE.RepeatWrapping;
+grassTexture.repeat.set(15, 15);
+const grassNormal = new THREE.TextureLoader().load(
+  "/assets/grass/grass_nrm.jpg"
+);
+grassNormal.wrapS = THREE.RepeatWrapping;
+grassNormal.wrapT = THREE.RepeatWrapping;
+grassNormal.repeat.set(15, 15);
+
+
+const grass = new THREE.Mesh(
+  new THREE.PlaneGeometry(500, 500),
+  new THREE.MeshStandardMaterial({
+    map: grassTexture,
+    normalMap: grassNormal,
+  })
+);
+
+scene.add(grass);
+
+grass.rotateX(-Math.PI / 2);
 
 moon.position.z = 30;
 moon.position.setX(-10);
