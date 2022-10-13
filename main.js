@@ -173,9 +173,7 @@ moon.position.setY(50);
 function moveCamera() {
   const t = document.body.getBoundingClientRect().top;
 
-  moon.rotation.x += 0.05;
   moon.rotation.y += 0.075;
-  moon.rotation.z += 0.05;
 
   brandon.rotation.y += 0.01;
   brandon.rotation.z += 0.01;
