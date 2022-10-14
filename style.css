@@ -2,6 +2,13 @@ canvas {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  @media (max-width: 768px) {
+    
+  }
 }
 
 main {
@@ -68,12 +75,6 @@ blockquote p {
   grid-column: 6 / 12;
 }
 
-img{
-  width: 350px;
-  height: 300px;
-  align-self: center;
-}
-
 .project {
   display: flex;
   align-items: center;
@@ -94,21 +95,15 @@ img{
 
 .social-div {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: center;
+  flex-direction: row;
+  height: 40%;
+  width: 100%
 }
 
-.social-icon-1 {
-  height: 50%;
-  width: 40%;
-  display: inline-block
-}
-
-.social-icon-2 {
-  height: 80%;
-  width: 80%;
-  display: inline-block
+img {
+  float: left;
+  width: 100%;
+  height: auto;
 }
 
 .progress-bar-container {
@@ -135,5 +130,4 @@ label {
   color: #dbf977;
   font-size: 2rem;
   font-family: "DM Serif Display", serif;
-  
 }

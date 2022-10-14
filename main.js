@@ -31,10 +31,6 @@ const onProgress = function (xhr) {
   }
 };
 
-// loadingManager.onStart = function (url, item, total) {
-//   progressBar.value = (loaded / total) * 100;
-// };
-
 loadingManager.onProgress = function (url, loaded, total) {
   progressBar.value = (loaded / total) * 100;
 };
@@ -55,14 +51,6 @@ camera.position.setZ(-5);
 camera.position.setY(55);
 camera.position.setX(15);
 
-// const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-// const material = new THREE.MeshStandardMaterial({
-//   color: 0xff6347,
-// });
-// const torus = new THREE.Mesh(geometry, material);
-
-// scene.add(torus);
-
 new MTLLoader(loadingManager).load(
   "/assets/tree/p_p.mtl",
   function (materials) {
@@ -77,20 +65,6 @@ new MTLLoader(loadingManager).load(
     );
   }
 );
-
-// new MTLLoader(loadingManager).load(
-//   "/assets/grass/grass.mtl",
-//   function (materials) {
-//     materials.preload();
-//     new OBJLoader()
-//       .setMaterials(materials)
-//       .load("/assets/grass/grass.obj", function (object) {
-//         object.scale.set(0.9, 0.1, 0.1);
-//         object.position.set(2, 0, 0);
-//         scene.add(object);
-//       });
-//   }
-// );
 
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(20, 20, 20);
@@ -153,7 +127,6 @@ grassNormal.wrapS = THREE.RepeatWrapping;
 grassNormal.wrapT = THREE.RepeatWrapping;
 grassNormal.repeat.set(15, 15);
 
-
 const grass = new THREE.Mesh(
   new THREE.PlaneGeometry(500, 500),
   new THREE.MeshStandardMaterial({
@@ -185,18 +158,34 @@ function moveCamera() {
 
 document.body.onscroll = moveCamera;
 
-function animate() {
-  requestAnimationFrame(animate);
-
-  controls.update();
-
-  renderer.render(scene, camera);
+function resizeRendererToDisplaySize(renderer) {
+  const canvas = renderer.domElement;
+  const pixelRatio = window.devicePixelRatio;
+  const width = (canvas.clientWidth * pixelRatio) | 0;
+  const height = (canvas.clientHeight * pixelRatio) | 0;
+  const needResize = canvas.width !== width || canvas.height !== height;
+  if (needResize) {
+    renderer.setSize(width, height, false);
+  }
+  return needResize;
 }
 
-animate();
+function render(time) {
+  time *= 0.001;
 
-window.addEventListener("resize", function () {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix;
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  if (resizeRendererToDisplaySize(renderer)) {
+    const canvas = renderer.domElement;
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+  }
+
+  const canvas = renderer.domElement;
+  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  camera.updateProjectionMatrix();
+
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(render);
+}
+
+requestAnimationFrame(render);
