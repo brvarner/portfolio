@@ -2,10 +2,11 @@ canvas {
   position: fixed;
   top: 0;
   left: 0;
-  width: auto;
-  height: 100%;
+  width: 100vw !important;
+  height: 100vh !important;
   display: block;
 }
+
 
 main {
   position: absolute;
@@ -45,6 +46,8 @@ header {
   font-size: 2.5rem;
   padding: 2rem;
   margin-bottom: var(--spacing);
+  display: flex;
+  flex-direction: column;
 }
 
 section {
@@ -86,6 +89,7 @@ blockquote p {
 #name {
   font-family: "DM Serif Display", serif;
   color: #dbf977;
+  font-size: 100%;
 }
 
 .project-text{
