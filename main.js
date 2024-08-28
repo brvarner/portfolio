@@ -16,9 +16,12 @@ const camera = new THREE.PerspectiveCamera(
 
 let loaded = false;
 
-const renderer = new THREE.WebGL1Renderer({
+const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg"),
+  antialias: false
 });
+
+renderer.shadowMap.enabled = false;
 
 const loadingManager = new THREE.LoadingManager();
 
@@ -27,7 +30,6 @@ const progressBar = document.getElementById("progress-bar");
 const onProgress = function (xhr) {
   if (xhr.lengthComputable) {
     const percentComplete = (xhr.loaded / xhr.total) * 100;
-    console.log(Math.round(percentComplete, 2));
   }
 };
 
